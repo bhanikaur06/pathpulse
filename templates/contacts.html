@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contacts — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="app-shell">
+  {% include "_nav.html" %}
+
+  <main class="main-area">
+    <div class="topline">
+      <div>
+        <h2>Emergency contacts</h2>
+        <p style="margin-top:4px;">These are the people Path Pulse alerts when SOS triggers.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title">➕ Add a contact</div>
+        <form method="POST">
+          <input type="text" name="name" class="field" placeholder="Contact name" required>
+          <input type="text" name="phone" class="field" placeholder="Phone number" required>
+          <input type="text" name="relationship" class="field" placeholder="Relationship (e.g. Mother, Roommate)" required>
+          <button class="btn btn-primary btn-block">Add contact</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📇 Your contacts</div>
+        <table>
+          <tr><th>Name</th><th>Phone</th><th>Relation</th><th></th></tr>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row["name"] }}</td>
+            <td class="mono">{{ row["phone"] }}</td>
+            <td>{{ row["relationship"] }}</td>
+            <td><a href="/delete_contact/{{ row['id'] }}" class="btn btn-danger btn-sm">Delete</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">No emergency contacts added yet.</td></tr>
+          {% endfor %}
+        </table>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  .d-none { display:none !important; }
+  .share-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    word-break: break-all;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  {% set active = 'settings' %}
+  {% include "_nav.html" %}
+
+  <main class="main-area">
+    <div class="topline">
+      <div>
+        <h2>Settings</h2>
+        <p style="margin-top:4px;">Manage your account and safety preferences.</p>
+      </div>
+    </div>
+
+    {% if message %}
+    <div style="background:var(--safe-dim);border:1px solid var(--safe);color:var(--safe);
+                padding:10px 16px;border-radius:var(--radius-sm);margin-bottom:18px;font-size:0.9rem;">
+      ✅ {{ message }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-banner">{{ error }}</div>
+    {% endif %}
+
+    <div class="grid grid-2">
+
+      <!-- Update Name -->
+      <div class="card">
+        <div class="card-title">👤 Update name</div>
+        <form method="POST">
+          <input type="hidden" name="action" value="update_profile">
+          <label class="field-label">Your name</label>
+          <input type="text" name="name" class="field" value="{{ user['name'] }}" required>
+          <button class="btn btn-primary btn-block">Save name</button>
+        </form>
+      </div>
+
+      <!-- Update Password -->
+      <div class="card">
+        <div class="card-title">🔒 Change password</div>
+        <form method="POST">
+          <input type="hidden" name="action" value="update_password">
+          <label class="field-label">Current password</label>
+          <input type="password" name="current_password" class="field" placeholder="••••••••" required>
+          <label class="field-label">New password</label>
+          <input type="password" name="new_password" class="field" placeholder="At least 6 characters" required>
+          <label class="field-label">Confirm new password</label>
+          <input type="password" name="confirm_password" class="field" placeholder="••••••••" required>
+          <button class="btn btn-primary btn-block">Change password</button>
+        </form>
+      </div>
+
+      <!-- Update Code Word -->
+      <div class="card">
+        <div class="card-title">🤫 Change secret code word</div>
+        <p style="font-size:0.85rem;">Your code word triggers a silent SOS when typed or spoken. It's stored securely — we never show you what it currently is.</p>
+        <form method="POST">
+          <input type="hidden" name="action" value="update_code_word">
+          <label class="field-label">New code word</label>
+          <input type="text" name="new_code_word" class="field" placeholder="e.g. SUNFLOWER" required>
+          <button class="btn btn-warn btn-block">Update code word</button>
+        </form>
+      </div>
+
+      <!-- Live Share Link -->
+      <div class="card">
+        <div class="card-title">📍 Live location share link</div>
+        <p style="font-size:0.85rem;">Generate a link you can share with someone so they can see your live location without logging in. Revoke it any time.</p>
+
+        {% if twilio_enabled %}
+        <div style="background:var(--safe-dim);border:1px solid var(--safe);color:var(--safe);
+                    padding:8px 12px;border-radius:var(--radius-sm);font-size:0.8rem;margin-bottom:12px;">
+          ✅ SMS alerts are active — contacts will receive a text when SOS fires.
+        </div>
+        {% else %}
+        <div style="background:var(--caution-dim);border:1px solid var(--caution);color:var(--caution);
+                    padding:8px 12px;border-radius:var(--radius-sm);font-size:0.8rem;margin-bottom:12px;">
+          ⚠️ SMS alerts are off — set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in your environment to enable real SMS.
+        </div>
+        {% endif %}
+
+        <div id="shareUrlBox" class="share-box d-none"></div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button id="generateBtn" class="btn btn-primary" onclick="generateLink()">
+            🔗 Generate share link
+          </button>
+          <button id="copyBtn" class="btn btn-ghost d-none" onclick="copyLink()">
+            📋 Copy link
+          </button>
+          <button id="revokeBtn" class="btn btn-danger d-none" onclick="revokeLink()">
+            🗑️ Revoke link
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Account info -->
+    <div class="card" style="margin-top:18px;">
+      <div class="card-title">ℹ️ Account info</div>
+      <table>
+        <tr><th>Name</th><td>{{ user['name'] }}</td></tr>
+        <tr><th>Email</th><td>{{ user['email'] }}</td></tr>
+        <tr><th>Account created</th><td class="mono">{{ user['created_at'][:10] if user['created_at'] else 'N/A' }}</td></tr>
+        <tr><th>Code word</th><td>{{ '✅ Set' if user['code_word_hash'] else '❌ Not set' }}</td></tr>
+      </table>
+    </div>
+
+    <div style="margin-top:18px;">
+      <a href="/logout" class="btn btn-danger">🚪 Logout</a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let currentUrl = "";
+
+function generateLink() {
+  fetch("/share/generate", { method: "POST" })
+    .then(r => r.json())
+    .then(data => {
+      currentUrl = data.url;
+      document.getElementById("shareUrlBox").textContent = currentUrl;
+      document.getElementById("shareUrlBox").classList.remove("d-none");
+      document.getElementById("copyBtn").classList.remove("d-none");
+      document.getElementById("revokeBtn").classList.remove("d-none");
+    });
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(currentUrl)
+    .then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.textContent = "✅ Copied!";
+      setTimeout(() => btn.textContent = "📋 Copy link", 2000);
+    });
+}
+
+function revokeLink() {
+  fetch("/share/revoke", { method: "POST" })
+    .then(r => r.json())
+    .then(() => {
+      document.getElementById("shareUrlBox").classList.add("d-none");
+      document.getElementById("copyBtn").classList.add("d-none");
+      document.getElementById("revokeBtn").classList.add("d-none");
+      currentUrl = "";
+    });
+}
+</script>
+
+</body>
+</html>

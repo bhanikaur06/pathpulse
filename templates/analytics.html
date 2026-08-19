@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytics — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="app-shell">
+  {% include "_nav.html" %}
+
+  <main class="main-area">
+    <div class="topline">
+      <div>
+        <h2>Analytics</h2>
+        <p style="margin-top:4px;">
+          {% if not ml_ready %}
+            <span style="color:var(--caution);">⚠ ML model not trained yet — currently rule-based only.</span>
+          {% else %}
+            ML anomaly model is active.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="card stat-card">
+        <div class="stat-value">{{ total_trips }}</div>
+        <div class="stat-label">Total trips</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" style="color:var(--safe);">{{ safe_routes }}</div>
+        <div class="stat-label">Safe routes</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" style="color:var(--caution);">{{ new_routes }}</div>
+        <div class="stat-label">New / anomalous routes</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-value" style="color:var(--danger);">{{ sos_alerts }}</div>
+        <div class="stat-label">SOS alerts</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:18px;">
+
+      <div class="card">
+        <div class="card-title">📈 Trips per day (last 7 days)</div>
+        <canvas id="tripsChart" height="180"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧭 Learned routes</div>
+        <p style="font-size:0.9rem;">
+          <span class="mono" style="color:var(--safe); font-size:1.4rem;">{{ normal_patterns }}</span>
+          route{{ "s" if normal_patterns != 1 else "" }} marked <b>NORMAL</b> after 3+ trips.
+        </p>
+        <p style="font-size:0.85rem;">Every other start → destination pair is still being learned, or was a one-off.</p>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-title">🚨 Recent alerts</div>
+      <table>
+        <tr><th>Reason</th><th>Location</th><th>Time</th><th>Status</th><th></th></tr>
+        {% for a in recent_alerts %}
+        <tr>
+          <td>{{ a["reason"] }}</td>
+          <td class="mono">{{ "%.4f"|format(a["latitude"]) }}, {{ "%.4f"|format(a["longitude"]) }}</td>
+          <td class="mono">{{ a["time"] }}</td>
+          <td>
+            {% if a["resolved"] %}
+              <span class="badge badge-safe">Resolved</span>
+            {% else %}
+              <span class="badge badge-danger">Open</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if not a["resolved"] %}
+              <a href="/resolve_alert/{{ a['id'] }}" class="btn btn-ghost btn-sm">Mark resolved</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No alerts yet — good sign.</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+  const ctx = document.getElementById("tripsChart");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: {{ daily_labels|tojson }},
+      datasets: [{
+        label: "Trips",
+        data: {{ daily_counts|tojson }},
+        borderColor: "#2dd4bf",
+        backgroundColor: "rgba(45,212,191,0.15)",
+        tension: 0.3,
+        fill: true,
+      }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#9aa0b8" }, grid: { color: "rgba(255,255,255,0.06)" } },
+        y: { ticks: { color: "#9aa0b8", precision: 0 }, grid: { color: "rgba(255,255,255,0.06)" } },
+      },
+    },
+  });
+</script>
+
+</body>
+</html>

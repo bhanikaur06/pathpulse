@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  .auth-wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .auth-card { width: 100%; max-width: 440px; }
+  .auth-card .brand { justify-content:center; padding-bottom: 24px; }
+  .hint { font-size: 0.78rem; color: var(--text-faint); margin: -8px 0 14px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="auth-wrap">
+  <div class="card auth-card">
+    <div class="brand"><span class="dot"></span> Path Pulse</div>
+    <h2 style="text-align:center; margin-bottom:6px;">Create your account</h2>
+    <p style="text-align:center; margin-bottom:22px;">A few seconds, then Path Pulse starts learning your routes.</p>
+
+    {% if error %}<div class="error-banner">{{ error }}</div>{% endif %}
+
+    <form method="POST">
+      <label class="field-label">Full name</label>
+      <input type="text" name="name" class="field" placeholder="Your name" required>
+
+      <label class="field-label">Email</label>
+      <input type="email" name="email" class="field" placeholder="you@example.com" required>
+
+      <label class="field-label">Password</label>
+      <input type="password" name="password" class="field" placeholder="At least 6 characters" required>
+      <div class="hint" style="margin-top:-12px;">Minimum 6 characters.</div>
+
+      <label class="field-label">Secret code word</label>
+      <input type="text" name="code_word" class="field" placeholder="e.g. SUNFLOWER">
+      <div class="hint">Type or say this word any time and Path Pulse silently sends an SOS — no popups, no confirmation needed.</div>
+
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+
+    <p style="text-align:center; margin-top:18px;">
+      <a href="/login">Already have an account? Login</a>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+# personal/runtime data — never commit your own location history
+routes.db
+routes.db-wal
+routes.db-shm
+
+# secrets — never commit credentials
+.env
+
+# raw dataset is huge — don't push it to GitHub
+ml/datasets/Data/
+ml/datasets/processed_routes.csv
+
+# generated evaluation outputs (regenerate locally if needed)
+ml/evaluation_outputs/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# patch scripts used during development — not needed in the repo
+patch.py
+patch2.py
+patch3.py
+patch4.py
+patch5.py
+patch6.py
+patch7.py
+patch8.py
+patch9.py
+patch10.py
+check_voice.py
+voice_check_output.txt

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  .d-none { display: none !important; }
+  .modal-backdrop-pp {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+    display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+  }
+  .modal-box { max-width: 380px; text-align: center; }
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    padding: 12px 20px; border-radius: var(--radius-sm); z-index: 150; font-size: 0.88rem;
+  }
+  .panic-row { display: flex; gap: 8px; }
+  .reading { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-faint); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  {% include "_nav.html" %}
+
+  <main class="main-area">
+    <div class="topline">
+      <div>
+        <h2>Live tracking</h2>
+        <p style="margin-top:4px;">Hey {{ name }} — Path Pulse is watching your route in the background.</p>
+      </div>
+      <button id="manualSosBtn" class="btn btn-danger">🚨 Manual SOS</button>
+      <button id="simulateBtn" class="btn btn-ghost" style="margin-left:8px;">🧪 Simulate Anomaly (Demo)</button>
+    </div>
+
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title">📍 Current location</div>
+        <p class="mono" id="coords">Fetching location…</p>
+        <div id="map" style="height:320px;"></div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div class="card-title" style="justify-content:center;">🛰️ Status</div>
+
+        <div id="pulseWrap" class="pulse-wrap">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+          <div class="pulse-core"></div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <span id="statusBadge" class="badge badge-safe">SAFE</span>
+        </div>
+        <p id="statusReason" style="margin-top:10px; font-size:0.88rem;">Matches your usual travel pattern.</p>
+        <p id="mlReading" class="reading"></p>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2" style="margin-top:18px;">
+
+      <div class="card">
+        <div class="card-title">🤫 Silent code word</div>
+        <p style="font-size:0.85rem;">Type your secret code word here any time to send a silent SOS — no confirmation shown.</p>
+        <div class="panic-row">
+          <input id="codeWordInput" type="password" class="field" placeholder="Code word" style="margin-bottom:0;">
+          <button id="codeWordBtn" class="btn btn-warn">Send</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗣️ Voice trigger</div>
+        <p style="font-size:0.85rem;">Say "help me" or your code word out loud and Path Pulse sends an alert automatically. Needs mic permission, works best in Chrome.</p>
+        <button id="voiceToggleBtn" class="btn btn-ghost btn-block">🎤 Enable voice trigger</button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Risk zone proximity warning banner -->
+<div id="riskBanner" class="d-none" style="
+  position:fixed; top:70px; left:50%; transform:translateX(-50%);
+  background:#7f1d1d; border:1px solid #ef4444; color:#fca5a5;
+  padding:12px 20px; border-radius:12px; z-index:90;
+  font-size:0.88rem; display:flex; align-items:center; gap:10px;
+  box-shadow:0 8px 24px rgba(239,68,68,0.35); max-width:90vw;">
+  🔴 <span id="riskBannerText">High-risk area nearby.</span>
+</div>
+
+<!-- New route confirmation modal -->
+<div id="newRouteModal" class="modal-backdrop-pp d-none">
+  <div class="card modal-box">
+    <div class="pulse-wrap is-caution" style="transform:scale(0.7); margin-bottom:8px;">
+      <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
+      <div class="pulse-core"></div>
+    </div>
+    <h3>You're on a new route</h3>
+    <p style="margin:10px 0 18px;">This doesn't match your usual travel pattern. Are you safe?</p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button id="confirmSafeBtn" class="btn btn-primary">Yes, I'm safe</button>
+      <button id="notSafeBtn" class="btn btn-danger">No / Not sure</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOS countdown banner -->
+<div id="sosBanner" class="sos-banner d-none">
+  ⚠️ No confirmation received — SOS in <span id="countdownDisplay" class="countdown">03:00</span>
+  <button id="cancelSosBtn" class="btn btn-ghost btn-sm" style="border-color:rgba(255,255,255,0.4); color:white;">Cancel</button>
+</div>
+
+<div id="toast" class="d-none"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

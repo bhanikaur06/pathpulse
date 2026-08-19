@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  .auth-wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .auth-card { width: 100%; max-width: 400px; }
+  .auth-card .brand { justify-content:center; padding-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="auth-wrap">
+  <div class="card auth-card">
+    <div class="brand"><span class="dot"></span> Path Pulse</div>
+    <h2 style="text-align:center; margin-bottom:6px;">Welcome back</h2>
+    <p style="text-align:center; margin-bottom:22px;">Log in to resume tracking.</p>
+
+    {% if error %}<div class="error-banner">{{ error }}</div>{% endif %}
+
+    <form method="POST">
+      <label class="field-label">Email</label>
+      <input type="email" name="email" class="field" placeholder="you@example.com" required>
+
+      <label class="field-label">Password</label>
+      <input type="password" name="password" class="field" placeholder="••••••••" required>
+
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <p style="text-align:center; margin-top:18px;">
+      <a href="/register">Don't have an account? Create one</a>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

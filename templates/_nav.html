@@ -1,0 +1,19 @@
+<nav class="sidebar">
+  <div class="brand"><span class="dot"></span> Path Pulse</div>
+  <a href="/dashboard" class="nav-link {{ 'active' if active=='dashboard' else '' }}">📍 Dashboard</a>
+  <a href="/history"   class="nav-link {{ 'active' if active=='history'   else '' }}">📜 History</a>
+  <a href="/analytics" class="nav-link {{ 'active' if active=='analytics' else '' }}">📊 Analytics</a>
+  <a href="/contacts"  class="nav-link {{ 'active' if active=='contacts'  else '' }}">📞 Contacts</a>
+  <a href="/settings"  class="nav-link {{ 'active' if active=='settings'  else '' }}">⚙️ Settings</a>
+  <div class="nav-spacer"></div>
+  <a href="/" class="nav-link">🏠 Home</a>
+  <a href="/logout" class="nav-link">🚪 Logout</a>
+</nav>
+
+<nav class="bottom-nav">
+  <a href="/dashboard" class="{{ 'active' if active=='dashboard' else '' }}">📍<span>Dashboard</span></a>
+  <a href="/history"   class="{{ 'active' if active=='history'   else '' }}">📜<span>History</span></a>
+  <a href="/analytics" class="{{ 'active' if active=='analytics' else '' }}">📊<span>Analytics</span></a>
+  <a href="/contacts"  class="{{ 'active' if active=='contacts'  else '' }}">📞<span>Contacts</span></a>
+  <a href="/settings"  class="{{ 'active' if active=='settings'  else '' }}">⚙️<span>Settings</span></a>
+</nav>

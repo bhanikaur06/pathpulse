@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ user['name'] }}'s Live Location — Path Pulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  body { background: var(--bg); }
+  .share-wrap { max-width:600px; margin:0 auto; padding:30px 20px; }
+  .pulse-label { text-align:center; color:var(--text-faint); font-size:0.8rem; font-family:var(--font-mono); margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="share-wrap">
+  <div class="brand" style="justify-content:center; padding-bottom:20px;">
+    <span class="dot"></span> Path Pulse
+  </div>
+
+  <div class="card" style="text-align:center; margin-bottom:18px;">
+    <div class="pulse-wrap" id="pulseWrap">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-core"></div>
+    </div>
+    <h3 style="margin-top:14px;">{{ user['name'] }}'s live location</h3>
+    <p id="lastSeen" style="font-size:0.85rem;">
+      {% if last %}
+        Last updated: {{ last['time'][:19] }}
+      {% else %}
+        No location data yet.
+      {% endif %}
+    </p>
+    <p style="font-size:0.78rem; color:var(--text-faint);">
+      Updates automatically every 10 seconds.
+    </p>
+  </div>
+
+  <div class="card">
+    <div id="map" style="height:380px;"></div>
+    <p class="mono" id="coords" style="text-align:center; margin-top:10px; font-size:0.82rem; color:var(--text-faint);">
+      {% if last %}{{ last['latitude'] }}, {{ last['longitude'] }}{% endif %}
+    </p>
+  </div>
+
+  <p style="text-align:center; margin-top:20px; font-size:0.78rem; color:var(--text-faint);">
+    This link was shared by {{ user['name'] }} via Path Pulse Safety System.
+  </p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const TOKEN = "{{ token }}";
+let map, marker;
+
+{% if last %}
+const initLat = {{ last['latitude'] }};
+const initLon = {{ last['longitude'] }};
+{% else %}
+const initLat = 28.6139;
+const initLon = 77.2090;
+{% endif %}
+
+map = L.map("map").setView([initLat, initLon], 15);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  attribution: "&copy; OpenStreetMap &copy; CARTO"
+}).addTo(map);
+
+marker = L.circleMarker([initLat, initLon], {
+  radius: 10, color: "#2dd4bf", fillColor: "#2dd4bf", fillOpacity: 0.9, weight: 2
+}).addTo(map);
+
+function refresh() {
+  fetch(`/share/${TOKEN}/data`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error === "expired") {
+        document.getElementById("lastSeen").textContent = "This share link has been revoked.";
+        document.getElementById("pulseWrap").classList.add("is-caution");
+        return;
+      }
+      if (data.status === "no_data") return;
+      marker.setLatLng([data.lat, data.lon]);
+      map.panTo([data.lat, data.lon]);
+      document.getElementById("coords").textContent = `${data.lat}, ${data.lon}`;
+      document.getElementById("lastSeen").textContent = `Last updated: ${data.time.slice(0,19)}`;
+    })
+    .catch(() => {});
+}
+
+setInterval(refresh, 10000);
+</script>
+</body>
+</html>

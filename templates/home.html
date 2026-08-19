@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Path Pulse — Smart Travel Safety</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  .hero-wrap { max-width: 1100px; margin: 0 auto; padding: 70px 24px 40px; }
+  .hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items: center; }
+  .eyebrow { color: var(--safe); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
+  .hero-grid h1 { font-size: 3rem; line-height: 1.08; margin: 14px 0 18px; }
+  .hero-grid h1 span { color: var(--safe); }
+  .feature-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 70px; }
+  .feature-row .card p { margin-top: 8px; font-size: 0.9rem; }
+  .feature-row .card h4 { font-size: 1rem; }
+  .pulse-demo-label { text-align: center; margin-top: 16px; color: var(--text-faint); font-size: 0.82rem; font-family: var(--font-mono); }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } .hero-grid h1 { font-size: 2.2rem; } .feature-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="hero-wrap">
+
+  <div class="hero-top">
+    <div class="brand"><span class="dot"></span> Path Pulse</div>
+    <div>
+      <a href="/login" class="btn btn-ghost btn-sm">Login</a>
+      <a href="/register" class="btn btn-primary btn-sm">Register</a>
+    </div>
+  </div>
+
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Personal travel safety</div>
+      <h1>Your routes have a <span>rhythm</span>.<br>Path Pulse learns it.</h1>
+      <p style="font-size:1.05rem; max-width:480px;">
+        Most safety apps just track where you are. Path Pulse learns where you
+        usually go, notices the moment a trip looks different, and escalates
+        to a real alert if you don't confirm you're okay — with no manual
+        check-ins required on a normal day.
+      </p>
+      <div style="margin-top:28px; display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="/register" class="btn btn-primary">Start tracking</a>
+        <a href="/login" class="btn btn-ghost">I already have an account</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="pulse-wrap">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-core"></div>
+      </div>
+      <div class="pulse-demo-label">STATUS: SAFE · last ping 4s ago</div>
+    </div>
+  </div>
+
+  <div class="feature-row">
+    <div class="card">
+      <h4>🧭 Pattern learning</h4>
+      <p>After a few trips on the same route, Path Pulse recognizes it as
+      normal — and only raises a flag when you genuinely go off-script.</p>
+    </div>
+    <div class="card">
+      <h4>🧠 ML anomaly scoring</h4>
+      <p>An Isolation Forest model trained on real GPS trajectories scores
+      every ping on location, time of day, and speed — not just distance.</p>
+    </div>
+    <div class="card">
+      <h4>🚨 Escalating SOS</h4>
+      <p>Unconfirmed unusual trips trigger a visible countdown, then an
+      automatic alert to your emergency contacts — plus a silent secret
+      code word and voice trigger for when you can't reach your phone.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer class="app-footer">Path Pulse Safety System · Built by Bhani Kaur · 2026</footer>
+
+</body>
+</html>
