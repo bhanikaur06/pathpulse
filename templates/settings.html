@@ -92,17 +92,6 @@
         <div class="card-title">📍 Live location share link</div>
         <p style="font-size:0.85rem;">Generate a link you can share with someone so they can see your live location without logging in. Revoke it any time.</p>
 
-        {% if twilio_enabled %}
-        <div style="background:var(--safe-dim);border:1px solid var(--safe);color:var(--safe);
-                    padding:8px 12px;border-radius:var(--radius-sm);font-size:0.8rem;margin-bottom:12px;">
-          ✅ SMS alerts are active — contacts will receive a text when SOS fires.
-        </div>
-        {% else %}
-        <div style="background:var(--caution-dim);border:1px solid var(--caution);color:var(--caution);
-                    padding:8px 12px;border-radius:var(--radius-sm);font-size:0.8rem;margin-bottom:12px;">
-          ⚠️ SMS alerts are off — set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in your environment to enable real SMS.
-        </div>
-        {% endif %}
 
         <div id="shareUrlBox" class="share-box d-none"></div>
 
