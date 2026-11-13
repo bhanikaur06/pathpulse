@@ -35,4 +35,8 @@ patch8.py
 patch9.py
 patch10.py
 check_voice.py
-voice_check_output.txt
+voice_check_output.txt_old/
+_theme_backup/
+
+_old/
+patch_predeploy.py

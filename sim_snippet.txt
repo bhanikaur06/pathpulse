@@ -1,0 +1,29 @@
+tude, pos.coords.longitude, "Manual SOS");
+    });
+  });
+
+  const simBtn = document.getElementById("simulateBtn");
+  if (simBtn) {
+    simBtn.addEventListener("click", () => {
+      const simLat = 19.0760;
+      const simLon = 72.8777;
+
+      fetch("/update_location", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `lat=${simLat}&lon=${simLon}`,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          document.getElementById("coords").textContent =
+            `${simLat.toFixed(5)}, ${simLon.toFixed(5)} (simulated)`;
+          setStatus(data.status, data.reason, data);
+          if (data.status === "NEW_ROUTE") {
+            showNewRoutePrompt(simLat, simLon);
+          } else {
+            toast("Simulated ping was SAFE — try again or confirm a route first.");
+          }
+        });
+    });
+  }
+});

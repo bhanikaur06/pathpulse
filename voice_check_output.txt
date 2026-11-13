@@ -1,0 +1,48 @@
+function toggleVoiceTrigger() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById("voiceToggleBtn");
+
+  if (!SpeechRecognition) {
+    toast("Voice trigger isn't supported in this browser (try Chrome).");
+    return;
+  }
+
+  if (voiceActive) {
+    recognition.stop();
+    voiceActive = false;
+    btn.textContent = "🎤 Enable voice trigger";
+    btn.classList.remove("btn-danger");
+    btn.classList.add("btn-ghost");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = "en-US";
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+
+    if (transcript.includes("help me")) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        sendSos(pos.coords.latitude, pos.coords.longitude, "Voice trigger: 'help me'");
+      });
+      return;
+    }
+
+    // also check against the user's actual code word, server-side
+    navigator.geolocation.getCurrentPosition((pos) => {
+      fetch("/verify_code_word", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `word=${encodeURIComponent(transcript)}&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.match) toast("🚨 Voice code word recognized — silent alert sent.");
+        });
+    });
+  };
+
+  recognition.onerror = () => { voiceActive = f

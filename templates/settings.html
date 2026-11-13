@@ -6,6 +6,8 @@
 <title>Settings — Path Pulse</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme-modes.css') }}">
+<script>(function(){try{var t=localStorage.getItem("pp_theme")||"light";if(t==="system")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
   .d-none { display:none !important; }
   .share-box {
@@ -173,5 +175,6 @@ function revokeLink() {
 }
 </script>
 
+<script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
 </body>
 </html>

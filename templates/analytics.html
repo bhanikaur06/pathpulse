@@ -6,6 +6,9 @@
 <title>Analytics — Path Pulse</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme-modes.css') }}">
+<script>(function(){try{var t=localStorage.getItem("pp_theme")||"light";if(t==="system")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/enhancements.css') }}">
 </head>
 <body>
 
@@ -103,8 +106,8 @@
       datasets: [{
         label: "Trips",
         data: {{ daily_counts|tojson }},
-        borderColor: "#2dd4bf",
-        backgroundColor: "rgba(45,212,191,0.15)",
+        borderColor: "#facc15",
+        backgroundColor: "rgba(250,204,21,0.15)",
         tension: 0.3,
         fill: true,
       }],
@@ -119,5 +122,6 @@
   });
 </script>
 
+<script src="{{ url_for('static', filename='js/enhancements.js') }}"></script>
 </body>
 </html>

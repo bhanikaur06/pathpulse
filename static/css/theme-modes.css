@@ -1,0 +1,78 @@
+/* Path Pulse light / dark switching.
+   Both palettes live here, so this works no matter what style.css contains. */
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f0e7d6; --bg-elevated: #fbf8f2; --bg-card: #ffffff;
+  --surface: rgba(60, 40, 20, 0.04); --surface-hover: rgba(60, 40, 20, 0.07);
+  --border: rgba(60, 40, 20, 0.12);
+  --text: #2a2118; --text-dim: #6b5d4f; --text-faint: #9a8b7c;
+  --accent: #facc15; --accent-hover: #eab308; --accent-ink: #1f1400;
+  --accent-dim: rgba(234, 179, 8, 0.16); --accent-text: #a16207;
+  --safe: #16a34a; --safe-dim: #dcfce7;
+  --caution: #ea580c; --caution-dim: #ffedd5;
+  --danger: #dc2626; --danger-dim: #fee2e2;
+  --info: #a16207;
+  --shadow: 0 12px 30px -18px rgba(60, 40, 20, 0.25);
+}
+:root[data-theme="light"] .bg-grid {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(250, 204, 21, 0.18), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(239, 68, 68, 0.06), transparent 45%),
+    var(--bg);
+}
+:root[data-theme="light"] .error-banner { color: #991b1b; border-color: rgba(220, 38, 38, 0.3); }
+:root[data-theme="light"] .pulse-core { box-shadow: 0 0 14px var(--safe); }
+
+/* accent colour on brand elements (same rules for both modes) */
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-hover); }
+.brand .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.nav-link.active { background: var(--accent-dim); color: var(--accent-text, var(--accent)); }
+.bottom-nav a.active { color: var(--accent-text, var(--accent)); }
+.field:focus { border-color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible { outline-color: var(--accent); }
+body .eyebrow, body .hero-grid h1 span { color: var(--accent-text, var(--accent)); }
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14100c; --bg-elevated: #1b1510; --bg-card: #211a14;
+  --surface: rgba(255, 236, 210, 0.04); --surface-hover: rgba(255, 236, 210, 0.07);
+  --border: rgba(255, 220, 180, 0.10);
+  --text: #f4ece2; --text-dim: #b8a99a; --text-faint: #7d6f62;
+  --accent: #facc15; --accent-hover: #fde047; --accent-ink: #1f1400;
+  --accent-dim: rgba(250, 204, 21, 0.14); --accent-text: #facc15;
+  --safe: #4ade80; --safe-dim: rgba(74, 222, 128, 0.15);
+  --caution: #fb923c; --caution-dim: rgba(251, 146, 60, 0.16);
+  --danger: #ef4444; --danger-dim: rgba(239, 68, 68, 0.16);
+  --info: #fcd34d;
+  --shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
+}
+:root[data-theme="dark"] .bg-grid {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(250, 204, 21, 0.09), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(239, 68, 68, 0.08), transparent 45%),
+    var(--bg);
+}
+:root[data-theme="dark"] .error-banner { color: #ffb4b4; border-color: rgba(239, 68, 68, 0.35); }
+:root[data-theme="dark"] .pulse-core { box-shadow: 0 0 18px var(--safe); }
+
+/* dark map: invert the light map tiles (markers and routes keep their colours) */
+:root[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9); }
+:root[data-theme="dark"] .leaflet-container { background: #1b1510; }
+
+/* appearance picker on the settings page */
+.theme-picker { display: flex; gap: 10px; flex-wrap: wrap; }
+.theme-option {
+  flex: 1; min-width: 92px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 12px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--text);
+  font: inherit; font-size: 0.88rem; cursor: pointer;
+}
+.theme-option:hover { background: var(--surface-hover); }
+.theme-option[aria-checked="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); font-weight: 600; }
+.theme-swatch { width: 46px; height: 30px; border-radius: 6px; border: 1px solid var(--border); }
+.swatch-light  { background: linear-gradient(135deg, #f0e7d6 50%, #ffffff 50%); }
+.swatch-dark   { background: linear-gradient(135deg, #14100c 50%, #211a14 50%); }
+.swatch-system { background: linear-gradient(135deg, #f0e7d6 50%, #14100c 50%); }

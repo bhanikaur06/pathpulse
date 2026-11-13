@@ -344,3 +344,32 @@ footer.app-footer {
   font-size: 0.8rem;
   padding: 30px 0;
 }
+
+
+/* ===== THEME OVERRIDE (saffron) — remove with: python patch_theme.py undo ===== */
+:root {
+  --bg: #14100c; --bg-elevated: #1b1510; --bg-card: #211a14;
+  --surface: rgba(255, 236, 210, 0.04); --surface-hover: rgba(255, 236, 210, 0.07);
+  --border: rgba(255, 220, 180, 0.10);
+  --text: #f4ece2; --text-dim: #b8a99a; --text-faint: #7d6f62;
+  --accent: #facc15; --accent-hover: #fde047; --accent-ink: #1f1400;
+  --accent-dim: rgba(250, 204, 21, 0.14);
+  --safe: #4ade80; --safe-dim: rgba(74, 222, 128, 0.15);
+  --caution: #fb923c; --caution-dim: rgba(251, 146, 60, 0.16);
+  --danger: #ef4444; --danger-dim: rgba(239, 68, 68, 0.16);
+  --info: #fcd34d;
+}
+.bg-grid {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(250, 204, 21, 0.09), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(239, 68, 68, 0.08), transparent 45%),
+    var(--bg);
+}
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--accent-hover); }
+.brand .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.nav-link.active { background: var(--accent-dim); color: var(--accent-text, var(--accent)); }
+.bottom-nav a.active { color: var(--accent-text, var(--accent)); }
+.field:focus { border-color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible { outline-color: var(--accent); }
+body .eyebrow, body .hero-grid h1 span { color: var(--accent-text, var(--accent)); }

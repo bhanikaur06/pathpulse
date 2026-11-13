@@ -59,16 +59,16 @@ let alertInProgress = false; // guards against repeated pings restarting the tim
 
 function initMap(lat, lon) {
   map = L.map("map", { zoomControl: false }).setView([lat, lon], 15);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: "&copy; OpenStreetMap &copy; CARTO",
+  L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png", {
+    attribution: "&copy; OpenStreetMap &copy; Stadia Maps",
     maxZoom: 19,
   }).addTo(map);
 
   marker = L.circleMarker([lat, lon], {
-    radius: 8, color: "#2dd4bf", fillColor: "#2dd4bf", fillOpacity: 0.9, weight: 2,
+    radius: 8, color: "#facc15", fillColor: "#facc15", fillOpacity: 0.9, weight: 2,
   }).addTo(map);
 
-  trail = L.polyline([], { color: "#2dd4bf", weight: 3, opacity: 0.6 }).addTo(map);
+  trail = L.polyline([], { color: "#facc15", weight: 3, opacity: 0.6 }).addTo(map);
 
   loadRiskZones();
 }
@@ -408,22 +408,35 @@ document.addEventListener("DOMContentLoaded", () => {
       const simLat = 19.0760;
       const simLon = 72.8777;
 
-      fetch("/update_location", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `lat=${simLat}&lon=${simLon}`,
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          document.getElementById("coords").textContent =
-            `${simLat.toFixed(5)}, ${simLon.toFixed(5)} (simulated)`;
-          setStatus(data.status, data.reason, data);
-          if (data.status === "NEW_ROUTE") {
-            showNewRoutePrompt(simLat, simLon);
-          } else {
-            toast("Simulated ping was SAFE — try again or confirm a route first.");
-          }
-        });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetch("/update_location", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&force_new_trip=1`,
+          }).then(() => setTimeout(() => runSimPing(simLat, simLon), 500));
+        },
+        () => runSimPing(simLat, simLon)
+      );
     });
   }
 });
+
+function runSimPing(simLat, simLon) {
+  fetch("/update_location", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `lat=${simLat}&lon=${simLon}`,
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      document.getElementById("coords").textContent =
+        `${simLat.toFixed(5)}, ${simLon.toFixed(5)} (simulated)`;
+      setStatus(data.status, data.reason, data);
+      if (data.status === "NEW_ROUTE") {
+        showNewRoutePrompt(simLat, simLon);
+      } else {
+        toast("Simulated ping was SAFE — try again.");
+      }
+    });
+}

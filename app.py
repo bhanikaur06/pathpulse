@@ -305,7 +305,8 @@ def send_email_alert(user_id, lat, lon, reason, conn, photo_bytes=None):
             img.add_header("Content-ID", "<sos_photo>")
             img.add_header("Content-Disposition", "inline", filename="surroundings.jpg")
             msg.attach(img)
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as smtp:
+            smtp.starttls()
             smtp.login(GMAIL_ADDRESS, GMAIL_APP_PASS)
             smtp.sendmail(GMAIL_ADDRESS, recipients, msg.as_string())
         print("[EMAIL] Alert sent to:", recipients, "with photo" if photo_bytes else "no photo")
@@ -617,6 +618,12 @@ def update_location():
             speed_kmh = dist_km / (gap_minutes/60.0)
 
     # trip bookkeeping
+    force_new_trip = request.form.get("force_new_trip", "") in ("1", "true", "True")
+    if force_new_trip:
+        existing_trip = get_active_trip(conn, user_id)
+        if existing_trip is not None:
+            finalize_trip(conn, existing_trip)
+
     active_trip = get_active_trip(conn, user_id)
     if active_trip is None:
         trip_id     = start_trip(conn, user_id, lat, lon, now)
@@ -835,6 +842,19 @@ def risk_zones_api():
     rows = conn.execute("SELECT latitude,longitude,risk_score FROM risk_zones").fetchall()
     conn.close()
     return jsonify([dict(r) for r in rows])
+
+@app.route("/setup_status")
+def setup_status():
+    if "user_id" not in session:
+        return jsonify({"error": "login required"}), 401
+    conn = get_db()
+    contacts = conn.execute(
+        "SELECT COUNT(*) FROM contacts WHERE user_id=?", (session["user_id"],)).fetchone()[0]
+    row = conn.execute(
+        "SELECT code_word_hash FROM users WHERE id=?", (session["user_id"],)).fetchone()
+    conn.close()
+    return jsonify({"contacts": contacts, "code_word": bool(row and row["code_word_hash"])})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
